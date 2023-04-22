@@ -4,6 +4,8 @@ const product = {
         price: 10000,
         kcall: 400,
         amount: 0,
+        descr: 'Встречайте простой ГАМБУРГЕР. Он не сочный и не сытный за то дешевый',
+        img: 'images/product2.jpg',
 
         get SUMM() {
             return this.price * this.amount;
@@ -17,6 +19,8 @@ const product = {
         price: 20500,
         kcall: 800,
         amount: 0,
+        descr: 'Встречайте Фрешмена FAS FOOD`а. Он набрал в себя всё самое старое.',
+        img: 'images/product1.jpg',
 
         get SUMM() {
             return this.price * this.amount;
@@ -30,6 +34,23 @@ const product = {
         price: 31900,
         kcall: 900,
         amount: 0,
+        descr: 'FRESH и Картошка фри. Тот же самый FRESH и Фри объяденились.',
+        img: 'images/product3.jpg',
+
+        get SUMM() {
+            return this.price * this.amount;
+        },
+        get KCALL() {
+            return this.kcall * this.amount;
+        }
+    },
+    bestBurger: {
+        name: 'BEST бургер',
+        price: 50000,
+        kcall: 1600,
+        amount: 0,
+        descr: 'Самый вкусный бургер в меню',
+        img: 'https://www.ipswichcodfather.co.uk/wp-content/uploads/2020/07/Burger-B-scaled-1-1-1536x1024.jpg',
 
         get SUMM() {
             return this.price * this.amount;
@@ -58,6 +79,14 @@ const extraProduct = {
     }
 }
 
+let result = '';
+
+setTimeout(() => createProduct(), 1000) ;
+
+function logic() {
+
+
+
 const btnPlusOrMinus = document.querySelectorAll('.main__product-btn');
 const checkExtraProduct = document.querySelectorAll('.main__product-checkbox');
 const addCart = document.querySelector('.addCart');
@@ -66,6 +95,7 @@ const receiptWindow = document.querySelector('.receipt__window');
 const receiptOut = document.querySelector('.receipt__window-out');
 const payBtn = document.querySelector('.receipt__window-btn');
 const logo = document.querySelector('.header__timer-extra');
+const imgElement = document.querySelectorAll('.main__product-info');
 
 let cart = [];
 let fullName = '';
@@ -86,6 +116,10 @@ checkExtraProduct.forEach(product => {
     product.addEventListener('click', function() {
         addExtraProduct(this);
     })
+})
+
+imgElement.forEach(img => {
+    img.addEventListener('dblclick', zoomImg)
 })
 
 addCart.addEventListener('click', () => {
@@ -190,4 +224,71 @@ function addExtraProduct(secondProduct) {
     kcall.innerHTML = product[parentId].KCALL;
 }
 
-payBtn.addEventListener('click', () => location.reload())
+function zoomImg(element) {
+    const viewElement = document.querySelector('.view');
+    const parentId = element.target.closest('.main__product').getAttribute('id');
+    const closeBtn = viewElement.querySelector('.view__close');
+
+    viewElement.classList.add('active');
+    viewImg = product[parentId].img;
+    viewElement.querySelector('img').setAttribute('src', viewImg);
+
+    closeBtn.addEventListener('click', () => {
+        viewElement.classList.remove('active');
+    })
+}
+
+payBtn.addEventListener('click', () => location.reload());
+}
+
+function createProduct() {
+    const mainElement = document.querySelector('.main');
+
+    for(const key in product) {
+
+        const { name, descr, img, price } = product[key];
+        result += `
+                <section class="main__product" id="${key}">
+                        <div class="main__product-preview">
+                            <div class="main__product-info">
+                                <img src="${img}" alt="" class="main__product-img">
+                                <h2 class="main__product-title">${name}
+                                    <span class="main__product-many">${price} сум</span>
+                                </h2>
+                            </div>
+                            <p class="main__product-descr">
+                                ${descr}
+                            </p>
+                        </div>
+                        <div class="main__product-extra">
+                            <div class="main__product-number">
+                                <a class="main__product-btn fa-reg minus" data-symbol="-"></a>
+                                <output class="main__product-num">0</output>
+                                <a class="main__product-btn fa-reg plus" data-symbol="+"></a>
+                            </div>
+                            <div class="main__product-price"><span>0</span> сум</div>
+                        </div>
+                    <div class="main__product-extraProduct">
+                `;
+
+        for(const newKey in extraProduct) {
+            result += `
+                <label class="main__product-label">
+                    <input type="checkbox" class="main__product-checkbox" data-extra="${newKey}">
+                    <span class="main__product-check"></span>
+                    ${extraProduct[newKey].name}
+                </label>
+            `;
+        }
+
+        result += `
+                </div>
+                <div class="main__product-kcall"><span>0</span> калорий</div>
+            </section>
+        `;
+    }
+
+    mainElement.innerHTML = result;
+
+    logic();
+}
